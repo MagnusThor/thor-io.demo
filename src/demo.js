@@ -35,7 +35,8 @@ class Demo {
             this.rtcClient.OnContextDisconnected = (peer) => {
                 console.log("disconnected", peer);
                 this.peers.delete(peer.id);
-                document.querySelector(`.peerId-${peer.id}`).remove();
+                document.querySelector(`.audio-peerId-${peer.id}`).remove();
+                document.querySelector(`.video-peerId-${peer.id}`).remove();
             };
             this.rtcClient.OnContextCreated = (ctx) => {
                 console.log("im at this context/room", ctx);
@@ -46,16 +47,23 @@ class Demo {
                 let ms = new MediaStream([track]);
                 if (track.kind == "video") {
                     //    p.video =  track;
-                    this.addVideo(peer.id, ms, "#remote-videos");
+                    this.addVideo(peer.id, ms, "#remote-videos", false);
                 }
                 else {
                     //  p.audio = track;
-                    this.addAudio(ms);
+                    this.addAudio(peer.id, ms);
                 }
                 console.log("remote conn", peer);
             };
-            navigator.getUserMedia({ video: true, audio: false }, (ms) => {
-                this.addVideo("local-stream", ms, "#local-video");
+            let constrains = {
+                video: {
+                    width: { min: 640, ideal: 1280, max: 1920 },
+                    height: { min: 400, ideal: 720, max: 1080 }
+                },
+                audio: true
+            };
+            navigator.getUserMedia(constrains, (ms) => {
+                this.addVideo("local-stream", ms, "#local-video", true);
                 this.rtcClient.AddLocalStream(ms);
                 this.rtcClient.ChangeContext(location.hash);
                 console.log(ms);
@@ -65,16 +73,21 @@ class Demo {
             broker.Connect();
         };
     }
-    addVideo(peerId, ms, parent) {
+    addVideo(peerId, ms, parent, isMuted) {
         let video = document.createElement("video");
         video.srcObject = ms;
         video.autoplay = true;
         video.width = 320;
-        video.muted = true;
-        video.classList.add(`peerId-${peerId}`);
+        video.muted = isMuted;
+        video.classList.add(`video-peerId-${peerId}`);
         document.querySelector(parent).append(video);
     }
-    addAudio(ms) {
+    addAudio(peerId, ms) {
+        let audio = document.createElement("audio");
+        audio.srcObject = ms;
+        audio.autoplay = true;
+        audio.classList.add(`audio-peerId-${peerId}`);
+        document.querySelector("#remote-videos").append(audio);
     }
     static getInstance() {
         return new Demo();

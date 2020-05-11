@@ -11,8 +11,10 @@ https://www.youtube.com/channel/UC6ofXMkT3RUe-G7wjaGCSWw
 
 All recordings are uncut, non edited so do not complain!
 
-1. Episode #1 https://youtu.be/TwPeJXgLT3E
-2. Episode #2 https://youtu.be/qrDKM4i8Kok
+1. Episode #1 https://youtu.be/TwPeJXgLT3E      - Get stated, connect local and 1-many remote participants
+2. Episode #2 https://youtu.be/qrDKM4i8Kok      - Deal with lost streams,Rooms and more
+3. Episode #3 https://youtu.be/M1Bw3eKz3do      - ReCap,Audio and Constraints 
+
 
 
 

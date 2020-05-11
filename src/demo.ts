@@ -2,20 +2,28 @@ import { Factory, WebRTC } from 'thor-io.client-vnext'
 import { Controller } from 'thor-io.client-vnext/src/Controller';
 
 export class Demo {
-    addVideo(peerId:string,ms: MediaStream,parent:string) {       
+    addVideo(peerId:string,ms: MediaStream,parent:string,isMuted:boolean) {       
         let video = document.createElement("video");
         video.srcObject = ms;
         video.autoplay = true;
         video.width = 320;
-        video.muted = true;
+        video.muted = isMuted;
 
-        video.classList.add(`peerId-${peerId}`);
-
+        video.classList.add(`video-peerId-${peerId}`);
 
         document.querySelector(parent).append(video);       
     }
 
-    addAudio(ms:MediaStream){
+    addAudio(peerId:string,ms:MediaStream){
+
+        let audio = document.createElement("audio");
+        audio.srcObject = ms;
+        audio.autoplay = true;
+
+        audio.classList.add(`audio-peerId-${peerId}`);
+
+        document.querySelector("#remote-videos").append(audio);
+
 
     }
 
@@ -78,7 +86,8 @@ export class Demo {
                 console.log("disconnected", peer);
                 this.peers.delete(peer.id);
 
-                document.querySelector(`.peerId-${peer.id}`).remove();
+                document.querySelector(`.audio-peerId-${peer.id}`).remove();
+                document.querySelector(`.video-peerId-${peer.id}`).remove();
 
             };
      
@@ -103,19 +112,29 @@ export class Demo {
 
                 if(track.kind =="video"){
                 //    p.video =  track;
-                    this.addVideo(peer.id,ms,"#remote-videos");
+                    this.addVideo(peer.id,ms,"#remote-videos",false);
                 }else {
                   //  p.audio = track;
-                    this.addAudio(ms);
+                    this.addAudio(peer.id,ms);
                 }
 
                 console.log("remote conn",peer);
 
             };
 
-            navigator.getUserMedia({video:true,audio:false},(ms:MediaStream) => {
+            let constrains = {
 
-                this.addVideo("local-stream",ms,"#local-video");
+                video:{
+                        width: {min:640,ideal: 1280, max:1920},
+                        height: {min:400,ideal:720,max:1080}
+                },
+
+                audio:true
+            };
+
+            navigator.getUserMedia(constrains,(ms:MediaStream) => {
+
+                this.addVideo("local-stream",ms,"#local-video",true);
 
                 this.rtcClient.AddLocalStream(ms);
                 
